@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="./stylesheets/style.css" />
+    
+    <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular.js"></script>
+    <script src="./javascripts/dice.js"></script>
+    <script src="./javascripts/app.js"></script>
+</head>
+<body ng-app="YahtzeeApp">
+    <div class="container" ng-controller="MainCtrl">
+        <div class="header">
+        </div>
+        <div class="game">
+            <div class="table">
+                <dice></dice>
+                <dice></dice>
+                <dice></dice>
+                <dice></dice>
+                <dice></dice>
+                <div class="btn" ng-click="roll()">ROLL</div>
+            </div>
+            <div class="board">
+                <div class="section">
+                    <div class="cell">SECTION</div>
+                    <div class="cell">Aces</div>
+                    <div class="cell">Twos</div>
+                    <div class="cell">Threes</div>
+                    <div class="cell">Fours</div>
+                    <div class="cell">Fives</div>
+                    <div class="cell">Sixes</div>
+                    <div class="cell">Upper Total</div>
+                    <div class="cell">Upper BONUS</div>
+                    <div class="cell">3 of a kind</div>
+                    <div class="cell">4 of a kind</div>
+                    <div class="cell">Full House</div>
+                    <div class="cell">Sm. Straight</div>
+                    <div class="cell">Lg. Straight</div>
+                    <div class="cell">YAHTZEE</div>
+                    <div class="cell">Chance</div>
+                    <div class="cell">Lower Total</div>
+                    <div class="cell">TOTAL</div>
+                </div>
+                <div class="point">
+                    <div class="body" style="width:{{models.players.length * 100 + 100}}px;">
+                        <div class="line me"> 
+                            <div class="cell">Player {{(me = models.me).id}}</div>
+                            <div class="cell slot" ng-click="done(0)">{{me.game[0]}}</div>
+                            <div class="cell slot" ng-click="done(1)">{{me.game[1]}}</div>
+                            <div class="cell slot" ng-click="done(2)">{{me.game[2]}}</div>
+                            <div class="cell slot" ng-click="done(3)">{{me.game[3]}}</div>
+                            <div class="cell slot" ng-click="done(4)">{{me.game[4]}}</div>
+                            <div class="cell slot" ng-click="done(5)">{{me.game[5]}}</div>
+                            <div class="cell total">{{upper = me.game[0] + me.game[1] + me.game[2] + me.game[3] + me.game[4] + me.game[5]}}</div>
+                            <div class="cell total">{{(bonus = upper > 62 ? 35 : 0) ? bonus : null}}</div>
+                            <div class="cell slot" ng-click="done(6)">{{me.game[6]}}</div>
+                            <div class="cell slot" ng-click="done(7)">{{me.game[7]}}</div>
+                            <div class="cell slot" ng-click="done(8)">{{me.game[8]}}</div>
+                            <div class="cell slot" ng-click="done(9)">{{me.game[9]}}</div>
+                            <div class="cell slot" ng-click="done(10)">{{me.game[10]}}</div>
+                            <div class="cell slot" ng-click="done(11)">{{me.game[11]}}</div>
+                            <div class="cell slot" ng-click="done(12)">{{me.game[12]}}</div>
+                            <div class="cell total">{{lower = me.game[6] + me.game[7] + me.game[8] + me.game[9] + me.game[10] + me.game[11] + me.game[12]}}</div>
+                            <div class="cell total">{{upper + bonus + lower}}</div>
+                        </div>
+                        <div class="line" ng-repeat="player in models.players"> 
+                            <div class="cell">Player {{player.id}}</div>
+                            <div class="cell">{{player.game[0]}}</div>
+                            <div class="cell">{{player.game[1]}}</div>
+                            <div class="cell">{{player.game[2]}}</div>
+                            <div class="cell">{{player.game[3]}}</div>
+                            <div class="cell">{{player.game[4]}}</div>
+                            <div class="cell">{{player.game[5]}}</div>
+                            <div class="cell total">{{upper = player.game[0] + player.game[1] + player.game[2] + player.game[3] + player.game[4] + player.game[5]}}</div>
+                            <div class="cell total">{{(bonus = upper > 62 ? 35 : 0) ? bonus : null}}</div>
+                            <div class="cell">{{player.game[6]}}</div>
+                            <div class="cell">{{player.game[7]}}</div>
+                            <div class="cell">{{player.game[8]}}</div>
+                            <div class="cell">{{player.game[9]}}</div>
+                            <div class="cell">{{player.game[10]}}</div>
+                            <div class="cell">{{player.game[11]}}</div>
+                            <div class="cell">{{player.game[12]}}</div>
+                            <div class="cell total">{{lower = player.game[6] + player.game[7] + player.game[8] + player.game[9] + player.game[10] + player.game[11] + player.game[12]}}</div>
+                            <div class="cell total">{{upper + bonus + lower}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
