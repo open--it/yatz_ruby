@@ -1,6 +1,6 @@
 (function () {
     
-    var myId = 2,
+    var myId = null,
         pollingInterval = 5000,
         dices = [],
         models = {
@@ -36,8 +36,8 @@
             function (eyes) {
                 var counts = _.chain(eyes).countBy(function (eye) { return eye; });
 
-                if (counts.find(function (count) { return count = 2; }).value()
-                    && counts.find(function (count) { return count = 3; }).value()) {
+                if (counts.find(function (count) { return count == 2; }).value()
+                    && counts.find(function (count) { return count == 3; }).value()) {
                     return 25;
                 }
 
@@ -60,7 +60,6 @@
         };
         
         $scope.roll = function () {
-            _.each(dices, function (dice) { return dice.rolling(); });
 
             var deferred = $q.defer(),
                 rolled = $q.defer();
@@ -70,16 +69,25 @@
 
             $q.all([rolled.promise, deferred.promise]).then(function (results) {
 
-                var rolledEyes = results[0];
+                var rolledEyes = results[0],
+                    rolledDices = [];
 
                 _.each(rolledEyes, function (eye) {
+                    var rolledDice = $q.defer();
+                    rolledDices.push(rolledDice.promise);
                     return $timeout(function () {
                         dices[eye.seq].stop(eye.eye);
-                    }, Math.floor(Math.random() * 3) * 150);
+                        rolledDice.resolve(eye.eye);
+                    }, Math.floor(Math.random() * 3) * 300);
                 });
                 
-                eyes = _.chain(rolledEyes).sortBy(function (eye) { return eye.seq; }).map(function (eye) { return eye.eye + 1; }).value();
+                $q.all(rolledDices).then(function () {
+                    eyes = _.chain(rolledEyes).sortBy(function (eye) { return eye.seq; }).map(function (eye) { return eye.eye + 1; }).value();
+                });
+                
             });
+            
+            _.each(dices, function (dice) { return dice.rolling(); });
         };
         
         $scope.done = function (slot) {
@@ -88,6 +96,11 @@
             }
             
             DiceSvc.decisionSlot(slot, eyes);
+            
+            _.chain(dices)
+            .filter(function (dice) { return dice.isHold(); })
+            .each(function (dice) { dice.toggle(); });
+            
             eyes = null;
         };
         
@@ -129,6 +142,11 @@
                 });
             };
         
+        $http.get('/enroll').success(function (response) {
+            myId = response.id;
+            PlayerSvc.getPlayers();
+        });
+        
         svc.rollingDice = function (rolled) {
             
             $http.post('/' + myId +'/roll', sequencialDices()).success(function (result) {
@@ -157,7 +175,6 @@
             });
         };
         
-        svc.getPlayers();
         $interval(svc.getPlayers, pollingInterval);
     });
     
