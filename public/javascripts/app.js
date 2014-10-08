@@ -83,7 +83,10 @@
         };
         
         $scope.done = function (slot) {
-            console.log(rules[slot](eyes));
+            if (eyes === null) {
+                return;
+            }
+            
             DiceSvc.decisionSlot(slot, eyes);
             eyes = null;
         };
@@ -119,19 +122,23 @@
     angular.module('YahtzeeApp')
     .service('DiceSvc', function ($http, PlayerSvc) {
         
-        var svc = this;
+        var svc = this,
+            sequencialDices = function () {
+                return _.map(dices, function (dice, index) {
+                    return _.extend({ seq : index }, dice.get());
+                });
+            };
         
         svc.rollingDice = function (rolled) {
-            $http.get('/json/roll.json').success(function (result) {
+            
+            $http.post('/' + myId +'/roll', sequencialDices()).success(function (result) {
                 rolled.resolve(result);
                 PlayerSvc.getPlayers();
             });
         };
         
-        
-        
         svc.decisionSlot = function (slot, eyes) {
-            $http.get('/json/decision.json').success(function () {
+            $http.post('/' + myId + '/decision', { slot : slot, dices : sequencialDices() }).success(function () {
                 PlayerSvc.getPlayers();
             });
         };
@@ -144,7 +151,7 @@
         var svc = this;
         
         svc.getPlayers = function () {
-            $http.get('/json/players.json').success(function(players) {
+            $http.get('/players').success(function(players) {
                 models.me = _.find(players, function (player) { return myId === player.id });
                 models.players = _.difference(players, models.me);
             });

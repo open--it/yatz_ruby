@@ -8,10 +8,11 @@ function Dice(el) {
         timer = null,
         SPEED = 30,
         dice = this,
+        eye = 0,
         eyes = ['ace', 'two', 'three', 'four', 'five', 'six'],
         degree = 0,
         isHold = false,
-        spin = function (eye, deg) {
+        spin = function (deg) {
             
             if (isNaN(eye)) {
                 eye = Math.floor(Math.random() * 6);
@@ -37,10 +38,11 @@ function Dice(el) {
         }
     };
     
-    dice.stop = function (eye) {
+    dice.stop = function (rolledEye) {
         spiner && clearInterval(spiner);
         timer && clearTimeout(timer);
-        spin(eye, 0);
+        eye = rolledEye;
+        spin(0);
     };
     
     dice.toggle = function () {
@@ -55,5 +57,12 @@ function Dice(el) {
     
     dice.isHold = function () {
         return isHold;
+    };
+    
+    dice.get = function () {
+        return {
+            status : isHold ? 'hold' : 'unhold',
+            eye : eye
+        }
     };
 }
