@@ -38,15 +38,16 @@ a {
 }
 
 .cell {
-    color: #ab4723;
+    color: #9a3612;
     height: 24px;
     line-height: 24px;
-    border-bottom: 1px solid #ab4723;
-    border-right: 1px solid #ab4723;
+    border-bottom: 1px solid #9a3612;
+    border-right: 1px solid #9a3612;
     text-align: center;
 }
 
 .cell.slot {
+    color: #eeaaaa;
     cursor: pointer;
 }
 
