@@ -20,7 +20,7 @@
                 <dice></dice>
                 <dice></dice>
                 <dice></dice>
-                <div class="btn" ng-click="roll()">ROLL</div>
+                <div class="btn" ng-if="canRolling()" ng-click="roll()">ROLL</div>
             </div>
             <div class="board">
                 <div class="section">
@@ -45,7 +45,7 @@
                 </div>
                 <div class="point">
                     <div class="body" style="width:{{models.players.length * 100 + 100}}px;">
-                        <div class="line me"> 
+                        <div ng-if="models.me" class="line me">
                             <div class="cell">Player {{(me = models.me).id}}</div>
                             <div class="cell" ng-class="getClass(0)" ng-click="done(0)">{{getPoint(0)}}</div>
                             <div class="cell" ng-class="getClass(1)" ng-click="done(1)">{{getPoint(1)}}</div>
@@ -65,7 +65,7 @@
                             <div class="cell total">{{lower = me.game[6] + me.game[7] + me.game[8] + me.game[9] + me.game[10] + me.game[11] + me.game[12]}}</div>
                             <div class="cell total">{{upper + bonus + lower}}</div>
                         </div>
-                        <div class="line" ng-repeat="player in models.players"> 
+                        <div class="line" ng-repeat="player in models.players | orderBy:'total':true"> 
                             <div class="cell">Player {{player.id}}</div>
                             <div class="cell">{{player.game[0]}}</div>
                             <div class="cell">{{player.game[1]}}</div>
@@ -83,7 +83,7 @@
                             <div class="cell">{{player.game[11]}}</div>
                             <div class="cell">{{player.game[12]}}</div>
                             <div class="cell total">{{lower = player.game[6] + player.game[7] + player.game[8] + player.game[9] + player.game[10] + player.game[11] + player.game[12]}}</div>
-                            <div class="cell total">{{upper + bonus + lower}}</div>
+                            <div class="cell total">{{player.total = upper + bonus + lower}}</div>
                         </div>
                     </div>
                 </div>

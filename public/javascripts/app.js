@@ -49,7 +49,12 @@
             total
         ];
         
-        var eyes = null;
+        var eyes = null,
+            canRolling = true;
+        
+        $scope.canRolling = function () {
+            return canRolling;
+        };
         
         $scope.isFilled = function (slot) {
             return models.me.game[slot] !== null;
@@ -64,6 +69,9 @@
             var deferred = $q.defer(),
                 rolled = $q.defer();
 
+            eyes = null;
+            canRolling = false;
+            
             DiceSvc.rollingDice(rolled);
             $timeout(deferred.resolve, 1000);
 
@@ -83,6 +91,9 @@
                 
                 $q.all(rolledDices).then(function () {
                     eyes = _.chain(rolledEyes).sortBy(function (eye) { return eye.seq; }).map(function (eye) { return eye.eye + 1; }).value();
+                    if (models.me.turn < 3) {
+                        canRolling = true;
+                    }
                 });
                 
             });
@@ -102,6 +113,7 @@
             .each(function (dice) { dice.toggle(); });
             
             eyes = null;
+            canRolling = true;
         };
         
         $scope.models = models;
@@ -142,11 +154,6 @@
                 });
             };
         
-        $http.get('/enroll').success(function (response) {
-            myId = response.id;
-            PlayerSvc.getPlayers();
-        });
-        
         svc.rollingDice = function (rolled) {
             
             $http.post('/' + myId +'/roll', sequencialDices()).success(function (result) {
@@ -168,13 +175,25 @@
         
         var svc = this;
         
-        svc.getPlayers = function () {
-            $http.get('/players').success(function(players) {
-                models.me = _.find(players, function (player) { return myId === player.id });
-                models.players = _.difference(players, models.me);
+        svc.enroll = function () {
+            $http.get('/enroll').success(function (response) {
+                myId = response.id;
+                svc.getPlayers();
             });
         };
         
+        svc.getPlayers = function () {
+            $http.get('/players').success(function(players) {
+                models.me = _.find(players, function (player) { return myId === player.id });
+                models.players = _.difference(players, models.me) || {};
+                
+                if (!models.me) {
+                    svc.enroll();
+                }
+            });
+        };
+        
+        svc.enroll();
         $interval(svc.getPlayers, pollingInterval);
     });
     
@@ -193,7 +212,9 @@
                 dices.push(dice);
                 
                 element.on('click', function () {
-                    dice.toggle();
+                    if (models.me.turn) {
+                        dice.toggle();
+                    }
                 });
             }
         };
