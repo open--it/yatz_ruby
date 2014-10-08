@@ -116,20 +116,49 @@
                     .value();
                 
                 console.log(rules[slot](result));
+                
+                DiceSvc.decisionSlot(slot, eyes);
             }
         });
+        
+        $scope.isFilled = function (slot) {
+            return models.me.game[slot] !== null;
+        };
+        
+        $scope.getClass = function (slot) {
+            return models.me.game && { done : (models.me.game[slot] != null), slot : (models.me.game[slot] == null) };
+        };
         
         $scope.roll = game.roll;
         
         $scope.done = game.done;
         
         $scope.models = models;
+        
+        $scope.rules = [
+            'Count and Add Only Aces',
+            'Count and Add Only Twos',
+            'Count and Add Only Threes',
+            'Count and Add Only Fours',
+            'Count and Add Only Fives',
+            'Count and Add Only Sixes',
+            'If Upper Total score is 63 or over then Score 35',
+            'Add Total Of All Dice',
+            'Add Total Of All Dice',
+            'SCORE 25',
+            'SCORE 30',
+            'SCORE 40',
+            'SCORE 50',
+            'Score Total Of All 5 Dice'
+        ];
+
     });
     
     
     
     
-    angular.module('YahtzeeApp').service('DiceSvc', function ($http, PlayerSvc) {
+    angular.module('YahtzeeApp')
+    .service('DiceSvc', function ($http, PlayerSvc) {
         
         var svc = this;
         
@@ -142,20 +171,16 @@
         
         
         
-        svc.decisionSlot = function (slot) {
-            $http.get('/json/decision.json', { slot : slot, dices : dices }).success(function () {
+        svc.decisionSlot = function (slot, eyes) {
+            $http.get('/json/decision.json').success(function () {
                 PlayerSvc.getPlayers();
             });
         };
         
         
         
-    });
-    
-    
-    
-    
-    angular.module('YahtzeeApp').service('PlayerSvc', function ($http, $interval) {
+    })
+    .service('PlayerSvc', function ($http, $interval) {
         
         var svc = this;
         
@@ -173,7 +198,8 @@
     
     
     
-    angular.module('YahtzeeApp').directive('dice', function () {
+    angular.module('YahtzeeApp')
+    .directive('dice', function () {
         
         return {
             restrict: 'E',

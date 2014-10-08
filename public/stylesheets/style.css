@@ -50,13 +50,26 @@ a {
     cursor: pointer;
 }
 
+.cell.done {
+    background-color: #dedede;
+}
+
 .cell.total {
     font-weight: bold;
 }
 
+.cell:first-child {
+    font-weight: bold;
+    color: #e3e3e3;
+    background-color: #555555;
+    border-right: 1px solid #555555;
+}
+
 .cell:last-child {
     font-weight: bold;
-    color: #4444dd;
+    color: #9999dd;
+    background-color: #333333;
+    border-right: 1px solid #333333;
 }
 
 .section > .cell {
