@@ -1,4 +1,10 @@
 Rails.application.routes.draw do
+  get 'role' => 'yahtzee#role'
+  get 'enroll' => 'yahtzee#enroll'
+  get 'user' => 'yahtzee#user'
+  get 'players' => 'yahtzee#players'
+
+  root 'yahtzee#index'
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

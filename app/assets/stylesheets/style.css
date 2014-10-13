@@ -88,7 +88,7 @@ a {
     width: 50px;
     margin: 5px;
     float: left;
-    background-image: url(../images/dice.png);
+    background-image: url(/assets/dice.png);
     background-size: 300px;
     cursor: pointer;
 }
