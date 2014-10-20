@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
-  get 'role' => 'yahtzee#role'
   get 'enroll' => 'yahtzee#enroll'
-  get 'user' => 'yahtzee#user'
+  post '/:user/roll' => 'yahtzee#user_roll'
+  post '/:user/decision' => 'yahtzee#user_decision'
   get 'players' => 'yahtzee#players'
 
   root 'yahtzee#index'
