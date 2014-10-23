@@ -37,7 +37,6 @@ class YahtzeeController < ApplicationController
     result = {} 
     $players.each do |p|
       if p[:id].to_s == user
-        logger.debug p.inspect
         p[:game][slot] = rules( slot, dices)  
         p[:turn] = 0
         result.merge( {"slot" => slot, "point" => p[:game][slot]})
@@ -53,7 +52,6 @@ class YahtzeeController < ApplicationController
 
 private 
   def rules (slot, dices)
-    logger.debug "rules " + slot.to_s
     case slot
       when 0..5 #Aces ~ Sixes
         upper( slot,  dices)
@@ -73,11 +71,9 @@ private
   end
 
   def fullhouse dices
-    count = [0, 0, 0, 0, 0, 0]
-    count.each_with_index { |c, i| c = dices.count{|k,v| v == i }}
-    logger.debug count.inspect
-    if (count.include? 2 )&& (count.include? 3)
-      return 40
+    counts = dices.each_with_object(Hash.new(0)){ |d, counts| counts[d[:eye]] += 1 }
+    if (counts.has_value? 2 )&& (counts.has_value? 3)
+      return 25
     else
       return 0
     end
@@ -91,23 +87,22 @@ private
 
   #return count  
   def nkind (count, dices)
-    logger.debug get_dice_eyes dices
-    real_count = 0
-    eye = 0
-    [0..5].each { |i| real_count = dices.count{|k,v| v == i} if dices.count{|k,v| v == i} >= real_count }
-    return count <= real_count
+    max_count = dices.each_with_object(Hash.new(0)){ |d, counts| counts[d[:eye]] += 1 }.max_by{|k, v| v}[1]
+		return count <= max_count
   end
 
   def akind (eye, dices)
     point = 0;
     if nkind( eye, dices)
-      total dices
+      point = total dices
     end
     return point
   end
 
   def contain( set, dices, score)
-    set.each { |s| return score if dices.include? s}
+    eyes = Array.new 
+    dices.each { |d| eyes.push(d[:eye])}
+    set.each { |s| return score if (s - eyes).empty? }
     return 0
   end
 
@@ -115,11 +110,5 @@ private
     sum = 0
     dices.each { |d| sum += (d[:eye]+1) if d[:eye] == eye }
     return sum 
-  end
-
-  def get_dice_eyes dices
-    eyes = [0, 0, 0, 0, 0]
-    dices.each_with_index { |d, i| eyes[i] = d[:eye]}
-    return eyes
   end
 end
